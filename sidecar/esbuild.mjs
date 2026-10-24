@@ -9,7 +9,8 @@
 //                             returns the model module bundled in main.js
 //   dist/node_modules/        packages the extension resolves by path at
 //                             runtime (require.resolve, a spawned CLI), with
-//                             their production dependencies
+//                             their production dependencies, minus docs, tests,
+//                             type declarations and source maps (pruneRuntimePackages)
 //
 // Usage: node esbuild.mjs [--watch]
 import * as esbuild from 'esbuild';
@@ -106,6 +107,31 @@ const findPackageDir = (name, fromDir) => {
 	}
 };
 
+// Files and directories in dist/node_modules that nothing loads at runtime. Code (.js/.cjs/.mjs),
+// .json (package manifests, @mnemonica/lethe schemas) and licenses stay.
+const PRUNE_DIRS = new Set(['test', 'tests', '__tests__', 'docs', '.github']);
+const PRUNE_DIR_PREFIXES = ['example'];
+const PRUNE_FILES = [
+	/^(readme|changelog)/i,
+	/\.(md|markdown|ts|mts|cts|map)$/i,
+	/^\.(eslintrc|eslintignore|editorconfig|nycrc|npmignore|prettierrc|travis\.yml)/i
+];
+
+const pruneRuntimePackages = (dir) => {
+	for (const entry of readdirSync(dir, { withFileTypes: true })) {
+		const full = join(dir, entry.name);
+		if (entry.isDirectory()) {
+			if (PRUNE_DIRS.has(entry.name) || PRUNE_DIR_PREFIXES.some(prefix => entry.name.startsWith(prefix))) {
+				rmSync(full, { recursive: true, force: true });
+			} else {
+				pruneRuntimePackages(full);
+			}
+		} else if (PRUNE_FILES.some(rule => rule.test(entry.name))) {
+			rmSync(full, { force: true });
+		}
+	}
+};
+
 const copyRuntimePackages = () => {
 	const target = join(dist, 'node_modules');
 	rmSync(target, { recursive: true, force: true });
@@ -133,6 +159,7 @@ const copyRuntimePackages = () => {
 			queue.push({ name: dep, from: dir, optional: true });
 		}
 	}
+	pruneRuntimePackages(target);
 	return seen.size;
 };
 

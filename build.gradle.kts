@@ -1,4 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -10,7 +11,12 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-val platformLocalPath = providers.gradleProperty("platformLocalPath").get()
+val platformLocalPath = providers.gradleProperty("platformLocalPath").orNull.orEmpty()
+
+// Developers compile against the installed OpenIDE. CI has no OpenIDE, so it passes -PciPlatform=true (or an empty
+// -PplatformLocalPath=) and gets IntelliJ IDEA of the same 262 branch from JetBrains' repositories instead.
+val useCiPlatform = platformLocalPath.isBlank() ||
+    providers.gradleProperty("ciPlatform").map { it.toBoolean() }.getOrElse(false)
 
 repositories {
     mavenCentral()
@@ -20,20 +26,27 @@ repositories {
 }
 
 dependencies {
-    intellijPlatform {
-        // Development target: the installed OpenIDE itself (runIde starts it).
-        local(platformLocalPath)
-        // CI alternative (OpenIDE is not available there; IDEA Community is no longer published since 253):
-        // intellijIdea("2026.2.3")
+    if (useCiPlatform) {
+        intellijPlatform {
+            // IDEA Community is no longer published separately since 253, so CI uses IntelliJ IDEA of the same branch.
+            intellijIdea(providers.gradleProperty("verifyIdeVersion"))
+            bundledPlugin("com.intellij.modules.jcef")
+        }
+    } else {
+        intellijPlatform {
+            // Development target: the installed OpenIDE itself (runIde starts it).
+            local(platformLocalPath)
+        }
+        // JBCefApp / JBCefBrowser live in the bundled "Web Browser (JCEF)" plugin (com.intellij.modules.jcef). Its jars are
+        // added directly: bundledPlugin(...) makes the Gradle plugin parse the OpenIDE layout, which it cannot read
+        // (see pluginVerification).
+        val jcefJars = files(
+            "$platformLocalPath/Contents/plugins/jcef-plugin/lib/modules/intellij.platform.ui.jcef.jar",
+            "$platformLocalPath/Contents/plugins/jcef-plugin/lib/modules/intellij.libraries.jcef.jar",
+        )
+        compileOnly(jcefJars)
+        testCompileOnly(jcefJars)
     }
-    // JBCefApp / JBCefBrowser live in the bundled "Web Browser (JCEF)" plugin (com.intellij.modules.jcef). Its jars are added
-    // directly: bundledPlugin(...) makes the Gradle plugin parse the OpenIDE layout, which it cannot read (see pluginVerification).
-    val jcefJars = files(
-        "$platformLocalPath/Contents/plugins/jcef-plugin/lib/modules/intellij.platform.ui.jcef.jar",
-        "$platformLocalPath/Contents/plugins/jcef-plugin/lib/modules/intellij.libraries.jcef.jar",
-    )
-    compileOnly(jcefJars)
-    testCompileOnly(jcefJars)
     // org.eclipse.lsp4j.jsonrpc comes from the platform (lib/eclipse.lsp4j.jsonrpc.jar is on the boot class path).
     testImplementation("junit:junit:4.13.2")
 }
@@ -65,6 +78,10 @@ intellijPlatform {
         }
     }
     pluginVerification {
+        // ResourceSchemeHandler registers the mnemo-res:// scheme through JBCefApp.addCefCustomSchemeHandlerFactory, which is
+        // @ApiStatus.Internal but the only way to get a standard, fetch-enabled scheme before JCEF starts. The verifier still
+        // prints that usage; it just does not fail the build.
+        failureLevel = FailureLevel.values().toList() - FailureLevel.INTERNAL_API_USAGES
         ides {
             // The verifier cannot read the OpenIDE layout (its core descriptor is META-INF/OpenIdeProPlugin.xml,
             // the verifier looks for IdeaPlugin.xml), so verify against IntelliJ IDEA of the same 262 branch

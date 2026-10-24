@@ -3,10 +3,22 @@
     <name>Mnemonica Graphica</name>
     <vendor url="https://github.com/mythographica">mythographica</vendor>
     <description><![CDATA[
-    Mnemonica type graph tools for OpenIDE: the Types, Usages, Flow, By Generation, Diamonds, Bagels and Live Trace
-    trees, go to definition and references for Mnemonica types. The original VS Code extension runs unchanged in a
-    Node.js sidecar (Node 18 or newer is required).
+    Mnemonica Graphica for OpenIDE: the unmodified <a href="https://github.com/mythographica/mnemographica">mnemographica</a>
+    VS Code extension running in a Node.js sidecar. Browse a project's Mnemonica type graph (Types, Usages, Flow,
+    By Generation, Diamonds, Bagels, Live Trace), open the interactive 3D graph, and use Ctrl+Click and
+    Find Mnemonica References on Mnemonica types. Requires Node.js 18 or newer and a project with a
+    <code>.tactica/</code> directory produced by <code>@mnemonica/tactica</code>.
     ]]></description>
+    <change-notes><![CDATA[
+    <h3>0.1.0</h3>
+    <ul>
+        <li>First release: the mnemographica 0.5.9 extension runs in a Node.js sidecar inside OpenIDE.</li>
+        <li>Mnemonica tool window with the Live Trace, Usages, Types, Flow, By Generation, Diamonds and Bagels tabs.</li>
+        <li>Webview editors on JCEF: Ψ 3D, Ψ Strategy MCP and Ψ App Channel, with IDE theme colors and vendored d3 and three.</li>
+        <li>Ctrl+Click go to definition and the Find Mnemonica References action (Alt+Shift+F4).</li>
+        <li>Settings | Tools | Mnemonica for the Node.js path and the extension's options.</li>
+    </ul>
+    ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
     <!-- JCEF is the bundled "Web Browser (JCEF)" plugin in 262; webview panels need it. -->
@@ -42,7 +54,7 @@
         <action id="Mnemonica.FindReferences" class="ru.mythographica.mnemographica.navigation.FindReferencesAction"
                 text="Find Mnemonica References" description="Find usages of the Mnemonica type at the caret">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="shift F12"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt shift F4"/>
         </action>
     </actions>
 </idea-plugin>
