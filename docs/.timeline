@@ -1,0 +1,4 @@
+2026-10-24T22:26:34Z wave1 start
+2026-10-24T22:59:10Z WP2 done (30m37s agent time, 19/19 tests)
+2026-10-24T23:16:35Z WP1 done (48m agent time)
+2026-10-24T23:24:23Z wave1 integrated: real sidecar round-trip test green, runIde initialize OK

@@ -1,0 +1,40 @@
+{
+	"name": "mnemographica-sidecar",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Node sidecar that runs the unmodified mnemographica VS Code extension on a vscode shim, speaking JSON-RPC to the OpenIDE host",
+	"license": "MIT",
+	"engines": {
+		"node": ">=18"
+	},
+	"scripts": {
+		"build": "node esbuild.mjs",
+		"watch": "node esbuild.mjs --watch",
+		"pretypecheck": "node scripts/gen-vscode-api.mjs",
+		"typecheck": "tsc -p tsconfig.json",
+		"pretest": "npm run build",
+		"test": "node --test --test-concurrency=1 \"test/**/*.test.mjs\"",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@mnemonica/dive": "0.10.4",
+		"@mnemonica/lethe": "0.2.2",
+		"@mnemonica/strategy": "0.5.3",
+		"@mnemonica/topologica": "0.1.0",
+		"ajv": "8.20.0",
+		"chokidar": "^4.0.3",
+		"mnemonica": "1.4.2",
+		"vscode-jsonrpc": "10.0.0",
+		"ws": "8.22.0"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.5",
+		"@types/node": "^20.19.43",
+		"@types/vscode": "1.74.0",
+		"@types/ws": "^8.18.1",
+		"esbuild": "^0.28.2",
+		"eslint": "^9.39.5",
+		"typescript": "~6.0.3",
+		"typescript-eslint": "^8.72.0"
+	}
+}

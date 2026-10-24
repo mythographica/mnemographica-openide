@@ -1,0 +1,7 @@
+<!-- Derived from mnemographica/media/psi-icon.svg (24x24 viewBox, stroke colour fixed for the IDE). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C707E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="3" x2="8" y2="11"/>
+  <line x1="16" y1="3" x2="16" y2="11"/>
+  <path d="M8 11 Q8 17 12 17 Q16 17 16 11" fill="none"/>
+  <line x1="12" y1="2" x2="12" y2="22"/>
+</svg>

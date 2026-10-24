@@ -1,0 +1,18 @@
+# Gradle / IntelliJ Platform plugin
+.gradle/
+build/
+.intellijPlatform/
+out/
+*.iml
+
+# IDE
+.idea/workspace.xml
+.idea/shelf/
+.aiforopenide/sessions/
+
+# Node sidecar
+sidecar/node_modules/
+sidecar/dist/
+
+# OS
+.DS_Store

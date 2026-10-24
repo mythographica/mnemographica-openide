@@ -1,0 +1,3 @@
+[submodule "mnemographica"]
+	path = mnemographica
+	url = https://github.com/mythographica/mnemographica.git

@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>ru.mythographica.mnemographica</id>
+    <name>Mnemonica Graphica</name>
+    <vendor url="https://github.com/mythographica">mythographica</vendor>
+    <description><![CDATA[
+    Mnemonica type graph tools for OpenIDE: the Types, Usages, Flow, By Generation, Diamonds, Bagels and Live Trace
+    trees, go to definition and references for Mnemonica types. The original VS Code extension runs unchanged in a
+    Node.js sidecar (Node 18 or newer is required).
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Mnemonica" anchor="left" icon="/icons/mnemonica.svg"
+                    factoryClass="ru.mythographica.mnemographica.toolwindow.MnemonicaToolWindowFactory"/>
+        <postStartupActivity implementation="ru.mythographica.mnemographica.sidecar.MnemonicaStartupActivity"/>
+        <statusBarWidgetFactory id="MnemonicaStatus"
+                                implementation="ru.mythographica.mnemographica.ui.MnemonicaStatusBarWidgetFactory"/>
+        <notificationGroup id="Mnemonica" displayType="BALLOON"/>
+        <projectConfigurable parentId="tools" id="ru.mythographica.mnemographica.settings" displayName="Mnemonica"
+                             instance="ru.mythographica.mnemographica.settings.MnemonicaConfigurable"/>
+        <gotoDeclarationHandler implementation="ru.mythographica.mnemographica.navigation.MnemonicaGotoDeclarationHandler"/>
+    </extensions>
+
+    <actions>
+        <!-- Sidecar commands (Mnemonica.<command>) are registered at runtime from InitializeResult.commands. -->
+        <group id="Mnemonica.ToolsGroup" text="Mnemonica" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <action id="Mnemonica.RestartSidecar" class="ru.mythographica.mnemographica.actions.RestartSidecarAction"
+                    text="Restart Mnemonica Sidecar" description="Stop and start the Mnemonica Node sidecar"/>
+            <separator/>
+        </group>
+        <action id="Mnemonica.FindReferences" class="ru.mythographica.mnemographica.navigation.FindReferencesAction"
+                text="Find Mnemonica References" description="Find usages of the Mnemonica type at the caret">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift F12"/>
+        </action>
+    </actions>
+</idea-plugin>

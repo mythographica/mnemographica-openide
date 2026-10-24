@@ -1,0 +1,40 @@
+{
+	// Typecheck only (esbuild emits). Compiles the sidecar together with the
+	// extension sources, with `vscode` mapped to the shim: the extension must
+	// typecheck against the shim's types, and the shim implements / Picks the
+	// real @types/vscode declarations (re-published as 'vscode-api' by
+	// scripts/gen-vscode-api.mjs). @types/vscode itself stays out of the
+	// program: its ambient `declare module 'vscode'` would win over the paths
+	// mapping.
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM"],
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"noEmit": true,
+		// the extension's own settings (node10 resolution + baseUrl paths)
+		"moduleResolution": "node",
+		"ignoreDeprecations": "6.0",
+		"baseUrl": ".",
+		"types": ["node"],
+		"typeRoots": ["./node_modules/@types"],
+		"paths": {
+			"vscode": ["./src/shim/index.ts"],
+			"vscode-jsonrpc/node": ["./node_modules/vscode-jsonrpc/lib/node/main.d.ts"],
+			"~tactica/*": ["../mnemographica/.tactica/*"],
+			// bare imports inside ../mnemographica resolve against this package's node_modules
+			"*": ["./node_modules/*", "./node_modules/@types/*"]
+		}
+	},
+	"include": [
+		"src/**/*.ts",
+		"../mnemographica/src/**/*.ts",
+		"../mnemographica/.tactica/*.ts"
+	]
+}
