@@ -4,6 +4,7 @@
 //   dist/main.js              src/main.ts + the vscode shim + mnemographica/src
 //   dist/package.json         mnemographica/package.json (contributes, version)
 //   dist/media/               mnemographica/media (webview.js/css, icons)
+//   dist/vendor/              d3 and three, downloaded once (scripts/vendor.mjs)
 //   dist/out/src/models/*.js  stubs the topologica bootstrap require()s; each
 //                             returns the model module bundled in main.js
 //   dist/node_modules/        packages the extension resolves by path at
@@ -15,6 +16,7 @@ import * as esbuild from 'esbuild';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { vendor } from './scripts/vendor.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const upstream = resolve(here, '..', 'mnemographica');
@@ -169,6 +171,7 @@ const options = {
 if (watch) {
 	copyExtensionFiles();
 	copyRuntimePackages();
+	await vendor(dist);
 	const ctx = await esbuild.context(options);
 	await ctx.watch();
 	console.log('watching src/ and ../mnemographica/src …');
@@ -177,6 +180,7 @@ if (watch) {
 	const result = await esbuild.build({ ...options, metafile: true });
 	copyExtensionFiles();
 	const packages = copyRuntimePackages();
+	await vendor(dist);
 	const bytes = statSync(join(dist, 'main.js')).size;
 	console.log(`dist/main.js ${(bytes / 1024).toFixed(0)} KB, ${Object.keys(result.metafile.inputs).length} inputs; ${packages} runtime packages in dist/node_modules`);
 }

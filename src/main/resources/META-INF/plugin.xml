@@ -9,6 +9,8 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <!-- JCEF is the bundled "Web Browser (JCEF)" plugin in 262; webview panels need it. -->
+    <depends>com.intellij.modules.jcef</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Mnemonica" anchor="left" icon="/icons/mnemonica.svg"
@@ -20,7 +22,14 @@
         <projectConfigurable parentId="tools" id="ru.mythographica.mnemographica.settings" displayName="Mnemonica"
                              instance="ru.mythographica.mnemographica.settings.MnemonicaConfigurable"/>
         <gotoDeclarationHandler implementation="ru.mythographica.mnemographica.navigation.MnemonicaGotoDeclarationHandler"/>
+        <fileEditorProvider implementation="ru.mythographica.mnemographica.webview.WebviewFileEditorProvider"/>
     </extensions>
+
+    <applicationListeners>
+        <!-- mnemo-res:// must be registered before JCEF starts. -->
+        <listener class="ru.mythographica.mnemographica.webview.ResourceSchemeRegistrar"
+                  topic="com.intellij.ide.AppLifecycleListener"/>
+    </applicationListeners>
 
     <actions>
         <!-- Sidecar commands (Mnemonica.<command>) are registered at runtime from InitializeResult.commands. -->

@@ -26,6 +26,14 @@ dependencies {
         // CI alternative (OpenIDE is not available there; IDEA Community is no longer published since 253):
         // intellijIdea("2026.2.3")
     }
+    // JBCefApp / JBCefBrowser live in the bundled "Web Browser (JCEF)" plugin (com.intellij.modules.jcef). Its jars are added
+    // directly: bundledPlugin(...) makes the Gradle plugin parse the OpenIDE layout, which it cannot read (see pluginVerification).
+    val jcefJars = files(
+        "$platformLocalPath/Contents/plugins/jcef-plugin/lib/modules/intellij.platform.ui.jcef.jar",
+        "$platformLocalPath/Contents/plugins/jcef-plugin/lib/modules/intellij.libraries.jcef.jar",
+    )
+    compileOnly(jcefJars)
+    testCompileOnly(jcefJars)
     // org.eclipse.lsp4j.jsonrpc comes from the platform (lib/eclipse.lsp4j.jsonrpc.jar is on the boot class path).
     testImplementation("junit:junit:4.13.2")
 }
@@ -101,6 +109,10 @@ tasks {
             systemProperty("mnemographica.sidecar.main", it)
         }
         providers.gradleProperty("runIdeProject").orNull?.let { args(it) }
+        // -PdebugRunCommand=mnemographica.showTypeGraph runs that command 5 s after the sidecar is up (debug hook).
+        providers.gradleProperty("debugRunCommand").orNull?.let {
+            systemProperty("mnemographica.debug.runCommand", it)
+        }
         systemProperty("idea.trust.all.projects", "true")
         systemProperty("ide.show.tips.on.startup.default.value", "false")
     }

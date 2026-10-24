@@ -109,7 +109,7 @@ interface Position { line: number; character: number; }
 | `tree/setMeta` | ⇒ | `{ viewId, title?, description?, message?, badge?: { value: number, tooltip } }` | Tab title / empty-state text. |
 | `view/focus` | ⇒ | `{ viewId }` | Built-in `<viewId>.focus` commands end up here: activate the tool window and select the tab. |
 | `webview/create` | → | `{ panelId, viewType, title, viewColumn?: number, enableScripts: boolean, retainContextWhenHidden: boolean, localResourceRoots: string[] }` → `null` | Open an editor tab (`FileEditor` backed by `JBCefBrowser`). |
-| `webview/setHtml` | ⇒ | `{ panelId, html }` | Host **rewrites** the HTML before loading (see below) and calls `loadHTML(html, baseUrl)`. |
+| `webview/setHtml` | ⇒ | `{ panelId, html }` | Host **rewrites** the HTML before loading (see below) and serves it itself at `mnemo-res://file/.mnemo-panel/<pageId>/index.html?v=<n>`, which the browser opens with `loadURL`, so the page and its `mnemo-res://` resources share one origin (`loadHTML` would give the page a `file:///jbcefbrowser/` origin and break same-origin `fetch`). `n` increments per load so a stale `onLoadEnd` cannot release queued messages early. |
 | `webview/postMessage` | ⇒ | `{ panelId, message: unknown }` | `executeJavaScript("window.__mnemoDeliver(<json>)")`; the polyfill dispatches a `MessageEvent('message', { data })` on `window`. |
 | `webview/reveal` | ⇒ | `{ panelId, viewColumn?: number, preserveFocus?: boolean }` | Select the tab. |
 | `webview/setTitle` | ⇒ | `{ panelId, title }` | |
@@ -121,7 +121,7 @@ interface Position { line: number; character: number; }
 
 Before loading `webview/setHtml` into JCEF, the host:
 
-1. Injects, as the first `<script>` in `<head>`, the bridge polyfill:
+1. Injects `<meta charset="utf-8">` and then, before anything else in `<head>` (so ahead of any CSP meta), the bridge polyfill:
    ```js
    window.acquireVsCodeApi = (() => { let api; return () => api ??= {
      postMessage: m => window.__mnemoSend(JSON.stringify(m)),   // __mnemoSend is the JBCefJSQuery injection

@@ -22,6 +22,7 @@ import com.intellij.util.messages.Topic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -190,6 +191,18 @@ class SidecarService(val project: Project, val scope: CoroutineScope) : Disposab
         }
         setState(State.RUNNING, null)
         sendActiveEditor()
+        runDebugCommand()
+    }
+
+    /** `-Dmnemographica.debug.runCommand=<id>`: a debug hook for headless checks (runIde -PdebugRunCommand=<id>). */
+    private fun runDebugCommand() {
+        val command = System.getProperty(DEBUG_RUN_COMMAND_PROPERTY)?.takeIf { it.isNotBlank() } ?: return
+        scope.launch {
+            delay(DEBUG_RUN_COMMAND_DELAY_MS)
+            LOG.info("Mnemonica DEBUG HOOK ($DEBUG_RUN_COMMAND_PROPERTY): command/execute $command")
+            val result = request("command/execute") { it.executeCommand(ExecuteCommandParams(command, emptyList(), null)) }.await()
+            LOG.info("Mnemonica DEBUG HOOK: $command returned $result")
+        }
     }
 
     private fun onProcessExit(proc: SidecarProcess, exitCode: Int) {
@@ -298,6 +311,8 @@ class SidecarService(val project: Project, val scope: CoroutineScope) : Disposab
         private const val INITIALIZE_TIMEOUT_S = 120L
         const val PLUGIN_ID = "ru.mythographica.mnemographica"
         const val SIDECAR_MAIN_PROPERTY = "mnemographica.sidecar.main"
+        const val DEBUG_RUN_COMMAND_PROPERTY = "mnemographica.debug.runCommand"
+        private const val DEBUG_RUN_COMMAND_DELAY_MS = 5_000L
 
         @Topic.ProjectLevel
         val TOPIC = Topic.create("Mnemonica sidecar state", Listener::class.java)

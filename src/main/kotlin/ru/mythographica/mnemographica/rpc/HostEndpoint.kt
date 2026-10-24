@@ -42,6 +42,7 @@ import ru.mythographica.mnemographica.ui.LoggerConsole
 import ru.mythographica.mnemographica.ui.MnemonicaNotifications
 import ru.mythographica.mnemographica.ui.MnemonicaStatusBarWidgetFactory
 import ru.mythographica.mnemographica.ui.ProgressTasks
+import ru.mythographica.mnemographica.webview.WebviewPanelRegistry
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import javax.swing.ListSelectionModel
@@ -235,44 +236,40 @@ class HostEndpoint(private val project: Project, private val service: SidecarSer
     @JsonNotification("view/focus")
     fun viewFocus(params: ViewFocusParams) = edt { tabs().focus(params.viewId) }
 
-    // ---------- webviews (WP3) ----------
+    // ---------- webviews ----------
+
+    private fun webviews() = WebviewPanelRegistry.getInstance(project)
 
     @JsonRequest("webview/create")
     fun webviewCreate(params: WebviewCreateParams): CompletableFuture<JsonElement?> {
-        // TODO(WP3): open a WebviewFileEditor (JBCefBrowser) tab for params.panelId.
-        LOG.info("Mnemonica: webview/create ${params.panelId} '${params.title}' (${params.viewType}) is not implemented yet (WP3)")
-        return CompletableFuture.completedFuture(JsonNull.INSTANCE)
+        // Answered once the panel exists, so the html and messages the sidecar sends next find it.
+        val created = CompletableFuture<JsonElement?>()
+        scope.launch(UiDispatcher) {
+            try {
+                if (!project.isDisposed) webviews().create(params)
+                created.complete(JsonNull.INSTANCE)
+            } catch (e: Throwable) {
+                LOG.warn("Mnemonica: webview/create ${params.panelId} failed", e)
+                created.completeExceptionally(error(ResponseErrorCode.InternalError, "webview/create failed: ${e.message}"))
+            }
+        }
+        return created
     }
 
     @JsonNotification("webview/setHtml")
-    fun webviewSetHtml(params: WebviewSetHtmlParams) {
-        // TODO(WP3): HtmlRewriter + ThemeCss, then loadHTML into the panel's browser.
-        LOG.info("Mnemonica: webview/setHtml ${params.panelId} (${params.html.length} chars) ignored until WP3")
-    }
+    fun webviewSetHtml(params: WebviewSetHtmlParams) = webviews().setHtml(params.panelId, params.html)
 
     @JsonNotification("webview/postMessage")
-    fun webviewPostMessage(params: WebviewPostMessageParams) {
-        // TODO(WP3): executeJavaScript("window.__mnemoDeliver(<json>)").
-        LOG.debug("Mnemonica: webview/postMessage ${params.panelId} ignored until WP3")
-    }
+    fun webviewPostMessage(params: WebviewPostMessageParams) = webviews().postMessage(params.panelId, params.message)
 
     @JsonNotification("webview/reveal")
-    fun webviewReveal(params: WebviewRevealParams) {
-        // TODO(WP3): select the panel's editor tab.
-        LOG.debug("Mnemonica: webview/reveal ${params.panelId} ignored until WP3")
-    }
+    fun webviewReveal(params: WebviewRevealParams) = edt { webviews().reveal(params.panelId, params.preserveFocus == true) }
 
     @JsonNotification("webview/setTitle")
-    fun webviewSetTitle(params: WebviewSetTitleParams) {
-        // TODO(WP3): rename the panel's editor tab.
-        LOG.debug("Mnemonica: webview/setTitle ${params.panelId} ignored until WP3")
-    }
+    fun webviewSetTitle(params: WebviewSetTitleParams) = edt { webviews().setTitle(params.panelId, params.title) }
 
     @JsonNotification("webview/dispose")
-    fun webviewDispose(params: WebviewDisposeParams) {
-        // TODO(WP3): close the panel's editor tab without echoing webview/disposed.
-        LOG.debug("Mnemonica: webview/dispose ${params.panelId} ignored until WP3")
-    }
+    fun webviewDispose(params: WebviewDisposeParams) = edt { webviews().dispose(params.panelId) }
 
     // ---------- builtins / misc ----------
 
