@@ -117,6 +117,8 @@ tasks {
         }
         from(sidecarDir.dir("dist")) {
             into(pluginName.map { "$it/sidecar" })
+            // The extension's LoggerService writes dist/logs during the sidecar tests; not part of the plugin.
+            exclude("logs/**")
         }
     }
 
