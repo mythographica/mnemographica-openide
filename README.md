@@ -77,7 +77,6 @@ Typecheck fails when upstream starts using a `vscode` API the shim lacks; the fi
 
 A Kotlin host (tool window, actions, settings, JCEF webviews, navigation) spawns one Node sidecar per project and talks to it over JSON-RPC on stdio. The sidecar bundles the upstream extension and a `vscode` shim that forwards every IDE-facing call to the host.
 
-- [docs/PLAN.md](docs/PLAN.md): design, repository layout, work packages and decisions.
 - [docs/PROTOCOL.md](docs/PROTOCOL.md): the host/sidecar wire contract, the only coupling between the two halves.
 - [docs/UPSTREAM_REQUESTS.md](docs/UPSTREAM_REQUESTS.md): changes the port would like in mnemographica, with the local workarounds.
 
