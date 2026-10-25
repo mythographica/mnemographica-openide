@@ -27,7 +27,7 @@ An OpenIDE (IntelliJ-based) plugin that runs the unmodified [mnemographica](http
 
 - OpenIDE Community has no TypeScript PSI, so there is no reference highlighting on hover. Navigation works by file offset instead.
 - Live Trace and the App Channel need a running app that emits dive traces (`@mnemonica/otel`, `@mnemonica/strategy`) and self-hosts the strategy channel. With the [tactica-nestjs](https://github.com/mythographica/tactica-nestjs) demo that is `npm run start:strat` (not `start:dev`: the channel is gated by `STRATEGY_CLIENT=1`), then **Ψ App Channel → Discover & Connect**, and `npm run demo:load` for traffic. A `{"available":false}` answer from `/strategy/channel` means the app runs without that variable.
-- The Strategy server binds fixed ports 9230 and 9231. Two projects open at once conflict on them (the second logs `EADDRINUSE` and gets no trace ingestion) until upstream request 4 lands, see [docs/UPSTREAM_REQUESTS.md](docs/UPSTREAM_REQUESTS.md).
+- The Strategy server binds fixed ports 9230 and 9231. Two projects open at once conflict on them (the second logs `EADDRINUSE` and gets no trace ingestion) until [mythographica/mnemographica#4](https://github.com/mythographica/mnemographica/issues/4) lands.
 
 ## Development
 
@@ -71,13 +71,12 @@ git -C mnemographica fetch && git -C mnemographica checkout <tag-or-commit>
 cd sidecar && npm run typecheck && npm test
 ```
 
-Typecheck fails when upstream starts using a `vscode` API the shim lacks; the fix is a shim method in `sidecar/src/shim/`. Review `docs/UPSTREAM_REQUESTS.md` for requests the new version may have resolved, then commit the submodule pointer.
+Typecheck fails when upstream starts using a `vscode` API the shim lacks; the fix is a shim method in `sidecar/src/shim/`. Check whether the new version resolves any of the port's upstream issues ([mythographica/mnemographica#1–#5](https://github.com/mythographica/mnemographica/issues?q=is%3Aissue+author%3Aandrewkuzmenko)) so the matching workaround in `sidecar/` can go, then commit the submodule pointer.
 
 ## Architecture
 
 A Kotlin host (tool window, actions, settings, JCEF webviews, navigation) spawns one Node sidecar per project and talks to it over JSON-RPC on stdio. The sidecar bundles the upstream extension and a `vscode` shim that forwards every IDE-facing call to the host.
 
 - [docs/PROTOCOL.md](docs/PROTOCOL.md): the host/sidecar wire contract, the only coupling between the two halves.
-- [docs/UPSTREAM_REQUESTS.md](docs/UPSTREAM_REQUESTS.md): changes the port would like in mnemographica, with the local workarounds.
 
 The `mnemographica/` submodule is read-only; the plugin never modifies it.
