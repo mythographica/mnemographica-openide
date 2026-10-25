@@ -26,7 +26,7 @@ An OpenIDE (IntelliJ-based) plugin that runs the unmodified [mnemographica](http
 ## Known limitations
 
 - OpenIDE Community has no TypeScript PSI, so there is no reference highlighting on hover. Navigation works by file offset instead.
-- Live Trace and the App Channel need a running app that emits dive traces (`@mnemonica/otel`, `@mnemonica/strategy`).
+- Live Trace and the App Channel need a running app that emits dive traces (`@mnemonica/otel`, `@mnemonica/strategy`) and self-hosts the strategy channel. With the [tactica-nestjs](https://github.com/mythographica/tactica-nestjs) demo that is `npm run start:strat` (not `start:dev`: the channel is gated by `STRATEGY_CLIENT=1`), then **Ψ App Channel → Discover & Connect**, and `npm run demo:load` for traffic. A `{"available":false}` answer from `/strategy/channel` means the app runs without that variable.
 - The Strategy server binds fixed ports 9230 and 9231. Two projects open at once conflict on them (the second logs `EADDRINUSE` and gets no trace ingestion) until upstream request 4 lands, see [docs/UPSTREAM_REQUESTS.md](docs/UPSTREAM_REQUESTS.md).
 
 ## Development
