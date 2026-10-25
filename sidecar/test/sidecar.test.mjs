@@ -126,6 +126,14 @@ describe('fixtures-v2', () => {
 		await assert.rejects(sidecar.execute('mnemographica.noSuchCommand'), error => error.code === -32601);
 	});
 
+	it('<viewId>.focus from the host (status bar item command) becomes view/focus', async () => {
+		sidecar.reset();
+		await sidecar.execute('mnemonicaTypes.focus');
+		const focus = await sidecar.waitFor('view/focus', params => params.viewId === 'mnemonicaTypes');
+		assert.equal(focus.params.viewId, 'mnemonicaTypes');
+		await assert.rejects(sidecar.execute('noSuchView.focus'), error => error.code === -32601);
+	});
+
 	it('shutdown answers null and exits 0', async () => {
 		assertHealthy(sidecar);
 		const result = await sidecar.shutdown();

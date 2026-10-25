@@ -26,18 +26,25 @@ export const registeredCommandIds = (): string[] => [...registry.keys()];
 
 const FOCUS_SUFFIX = '.focus';
 
+/** `<viewId>.focus` of a known view: the one built-in command the sidecar answers itself */
+const focusViewId = (command: string): string | undefined => {
+	if (!command.endsWith(FOCUS_SUFFIX)) {
+		return undefined;
+	}
+	const viewId = command.slice(0, -FOCUS_SUFFIX.length);
+	return viewIds.has(viewId) ? viewId : undefined;
+};
+
 const executeCommand = async <T = unknown>(command: string, ...rest: any[]): Promise<T> => {
 	const local = registry.get(command);
 	if (local) {
 		const result = await local.callback.apply(local.thisArg, rest);
 		return result;
 	}
-	if (command.endsWith(FOCUS_SUFFIX)) {
-		const viewId = command.slice(0, -FOCUS_SUFFIX.length);
-		if (viewIds.has(viewId)) {
-			await rpc().sendNotification(ViewFocusNotification, { viewId });
-			return undefined as T;
-		}
+	const viewId = focusViewId(command);
+	if (viewId !== undefined) {
+		await rpc().sendNotification(ViewFocusNotification, { viewId });
+		return undefined as T;
 	}
 	try {
 		const result = await rpc().sendRequest(ExecuteBuiltinRequest, { command, args: rest.map(arg => toWire(arg)) });
@@ -67,9 +74,13 @@ export const commands: Pick<typeof api.commands, 'registerCommand' | 'executeCom
 	executeCommand
 };
 
-/** host → sidecar `command/execute`: local commands only, argument references resolved back to live values */
+/**
+ * host → sidecar `command/execute`: local commands and `<viewId>.focus` (the
+ * status bar item's command is `mnemonicaTypes.focus`), argument references
+ * resolved back to live values
+ */
 export const executeFromHost = async (params: CommandExecuteParams): Promise<unknown> => {
-	if (!registry.has(params.command)) {
+	if (!registry.has(params.command) && focusViewId(params.command) === undefined) {
 		throw new ResponseError(METHOD_NOT_FOUND, `command '${params.command}' not found`);
 	}
 	const args = (params.args ?? []).map(arg => (isArgumentRef(arg) ? resolveArgumentRef(arg) : arg));
