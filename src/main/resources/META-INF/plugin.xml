@@ -3,29 +3,54 @@
     <name>Mnemonica Graphica</name>
     <vendor url="https://github.com/andrewkuzmenko">Andrew Kuzmenko</vendor>
     <description><![CDATA[
-    <p>Mnemonica Graphica for OpenIDE: the unmodified
-    <a href="https://github.com/mythographica/mnemographica">mnemographica</a> VS Code extension running in a Node.js
-    sidecar. Browse a project's Mnemonica type graph (Types, Usages, Flow, By Generation, Diamonds, Bagels,
-    Live Trace), open the interactive 3D graph, and use Ctrl+Click and Find Mnemonica References on Mnemonica types.
-    Requires Node.js 18 or newer and a project with a <code>.tactica/</code> directory produced by
-    <code>@mnemonica/tactica</code>. Source code and issues:
+    <p>Explore <a href="https://www.npmjs.com/package/mnemonica">mnemonica</a> type hierarchies in OpenIDE: definitions,
+    usages, execution flow and inheritance depth, with navigation to the source from every view.</p>
+    <ul>
+        <li><b>Types</b>: the full inheritance hierarchy by <code>define()</code> site, with a filter by name and by
+        unused types.</li>
+        <li><b>Usages</b>: every place the selected type is referenced.</li>
+        <li><b>Flow</b>: execution flow grouped by kind (instantiation, property access, pass as argument).</li>
+        <li><b>By Generation</b>: types grouped by inheritance depth.</li>
+        <li><b>Diamonds</b>: the callers graph, which scopes construct which types.</li>
+        <li><b>Bagels</b>: every <code>dive.wrap</code> call site.</li>
+        <li><b>3D graph</b>: the whole hierarchy as an interactive scene in an editor tab. d3 and three are bundled,
+        no network access is needed.</li>
+        <li><b>Live Trace</b>: traces of a running app; click a trace to isolate it in the 3D graph.</li>
+        <li>Ctrl+Click goes to the definition of a type; Find Mnemonica References (Alt+Shift+F4) lists its
+        usages.</li>
+    </ul>
+    <p>Requires Node.js 18 or newer and a project with a <code>.tactica/</code> directory produced by
+    <a href="https://www.npmjs.com/package/@mnemonica/tactica">@mnemonica/tactica</a>. The Node.js path is set in
+    Settings | Tools | Mnemonica.</p>
+    <p>The plugin runs the unmodified <a href="https://github.com/mythographica/mnemographica">mnemographica</a>
+    VS Code extension in a Node.js process next to the IDE. Source code and issues:
     <a href="https://github.com/mythographica/mnemographica-openide">github.com/mythographica/mnemographica-openide</a>.
     MIT license.</p>
     <hr/>
-    <p>Mnemonica Graphica для OpenIDE: расширение VS Code
-    <a href="https://github.com/mythographica/mnemographica">mnemographica</a> без изменений работает в процессе Node.js
-    рядом с IDE.</p>
+    <p>Mnemonica Graphica показывает иерархию типов проекта на
+    <a href="https://www.npmjs.com/package/mnemonica">mnemonica</a>: определения, использования, поток выполнения и
+    глубину наследования, с переходом к коду из любой вкладки.</p>
     <ul>
-        <li>Окно Mnemonica с графом типов проекта: Types, Usages, Flow, By Generation, Diamonds, Bagels, Live Trace.</li>
-        <li>Интерактивный 3D-граф типов во вкладке редактора. d3 и three входят в плагин, сеть не нужна.</li>
-        <li>Ctrl+Click по типу Mnemonica открывает его <code>define()</code>; действие Find Mnemonica References
-        (Alt+Shift+F4) ищет использования.</li>
-        <li>Вкладки Ψ Strategy MCP и Ψ App Channel для сервера <code>@mnemonica/strategy</code> и трассировки
-        запущенного приложения.</li>
+        <li><b>Types</b>: полная иерархия наследования по местам <code>define()</code>, с фильтром по имени и по
+        неиспользуемым типам.</li>
+        <li><b>Usages</b>: все места, где упоминается выбранный тип.</li>
+        <li><b>Flow</b>: поток выполнения по видам (создание экземпляров, обращения к свойствам, передача в
+        аргументы).</li>
+        <li><b>By Generation</b>: типы, сгруппированные по глубине наследования.</li>
+        <li><b>Diamonds</b>: граф вызовов, какие области кода создают какие типы.</li>
+        <li><b>Bagels</b>: места вызова <code>dive.wrap</code>.</li>
+        <li><b>3D-граф</b>: вся иерархия как интерактивная сцена во вкладке редактора. d3 и three входят в плагин,
+        доступ в сеть не нужен.</li>
+        <li><b>Live Trace</b>: трассы работающего приложения; щелчок по трассе выделяет её на 3D-графе.</li>
+        <li>Ctrl+Click открывает определение типа; Find Mnemonica References (Alt+Shift+F4) показывает его
+        использования.</li>
     </ul>
     <p>Нужны Node.js 18 или новее и проект с каталогом <code>.tactica/</code>, который создаёт
-    <code>@mnemonica/tactica</code>. Путь к Node.js задаётся в Settings | Tools | Mnemonica.</p>
-    <p>Исходный код и сообщения об ошибках:
+    <a href="https://www.npmjs.com/package/@mnemonica/tactica">@mnemonica/tactica</a>. Путь к Node.js задаётся в
+    Settings | Tools | Mnemonica.</p>
+    <p>Плагин запускает расширение VS Code
+    <a href="https://github.com/mythographica/mnemographica">mnemographica</a> без изменений в процессе Node.js рядом
+    с IDE. Исходный код и сообщения об ошибках:
     <a href="https://github.com/mythographica/mnemographica-openide">github.com/mythographica/mnemographica-openide</a>.
     Лицензия MIT.</p>
     ]]></description>
