@@ -4,7 +4,8 @@
 //   dist/main.js              src/main.ts + the vscode shim + mnemographica/src
 //   dist/package.json         mnemographica/package.json (contributes, version)
 //   dist/media/               mnemographica/media (webview.js/css, icons)
-//   dist/vendor/              d3 and three, downloaded once (scripts/vendor.mjs)
+//   dist/vendor/              d3 and three with their licenses, downloaded once (scripts/vendor.mjs)
+//   dist/THIRD-PARTY-LICENSES.txt  licenses of mnemographica and of every npm package bundled into main.js
 //   dist/out/src/models/*.js  stubs the topologica bootstrap require()s; each
 //                             returns the model module bundled in main.js
 //   dist/node_modules/        packages the extension resolves by path at
@@ -163,6 +164,33 @@ const copyRuntimePackages = () => {
 	return seen.size;
 };
 
+// main.js carries the upstream extension and the npm packages esbuild inlined; their license texts have to
+// ship with it. Packages in dist/node_modules keep their own license files (pruneRuntimePackages).
+const LICENSE_FILE = /^(licen[sc]e|copying)/i;
+
+const writeThirdPartyLicenses = (inputs) => {
+	const packageDirs = new Map([['mnemographica', upstream]]);
+	for (const input of Object.keys(inputs)) {
+		const parts = toPosix(input).split('node_modules/');
+		if (parts.length < 2) {
+			continue;
+		}
+		const segments = parts.at(-1).split('/');
+		const name = segments[0].startsWith('@') ? `${segments[0]}/${segments[1]}` : segments[0];
+		packageDirs.set(name, resolve(here, parts.slice(0, -1).join('node_modules/'), 'node_modules', name));
+	}
+	const sections = [...packageDirs].sort(([a], [b]) => a.localeCompare(b)).map(([name, dir]) => {
+		const file = readdirSync(dir).find(entry => LICENSE_FILE.test(entry));
+		if (!file) {
+			throw new Error(`third-party licenses: ${name} has no license file in ${dir}`);
+		}
+		const { version } = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
+		return `${name} ${version}\n${'-'.repeat(72)}\n${readFileSync(join(dir, file), 'utf8').trim()}\n`;
+	});
+	writeFileSync(join(dist, 'THIRD-PARTY-LICENSES.txt'), `Bundled in main.js:\n\n${sections.join('\n\n')}`);
+	return sections.length;
+};
+
 const copyExtensionFiles = () => {
 	rmSync(join(dist, 'media'), { recursive: true, force: true });
 	cpSync(join(upstream, 'media'), join(dist, 'media'), { recursive: true });
@@ -207,7 +235,8 @@ if (watch) {
 	const result = await esbuild.build({ ...options, metafile: true });
 	copyExtensionFiles();
 	const packages = copyRuntimePackages();
+	const licenses = writeThirdPartyLicenses(result.metafile.inputs);
 	await vendor(dist);
 	const bytes = statSync(join(dist, 'main.js')).size;
-	console.log(`dist/main.js ${(bytes / 1024).toFixed(0)} KB, ${Object.keys(result.metafile.inputs).length} inputs; ${packages} runtime packages in dist/node_modules`);
+	console.log(`dist/main.js ${(bytes / 1024).toFixed(0)} KB, ${Object.keys(result.metafile.inputs).length} inputs; ${packages} runtime packages in dist/node_modules; ${licenses} licenses in dist/THIRD-PARTY-LICENSES.txt`);
 }

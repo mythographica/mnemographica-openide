@@ -4,7 +4,7 @@ An OpenIDE (IntelliJ-based) plugin that runs the unmodified [mnemographica](http
 
 ## Requirements
 
-- OpenIDE 2026.2 (build 262 or newer).
+- OpenIDE 2026.2 (build 262).
 - Node.js 18 or newer on `PATH`, or its location set in Settings | Tools | Mnemonica | Node.js path. When no path is set the plugin also looks in the newest `~/.nvm/versions/node/*/bin`, `/opt/homebrew/bin` and `/usr/local/bin`.
 - A project with a `.tactica/` directory produced by [`@mnemonica/tactica`](https://www.npmjs.com/package/@mnemonica/tactica). See the upstream README for the expected files.
 
@@ -80,3 +80,7 @@ A Kotlin host (tool window, actions, settings, JCEF webviews, navigation) spawns
 - [docs/PROTOCOL.md](docs/PROTOCOL.md): the host/sidecar wire contract, the only coupling between the two halves.
 
 The `mnemographica/` submodule is read-only; the plugin never modifies it.
+
+## License
+
+[MIT](LICENSE). The plugin zip also carries the licenses of the code it bundles: `sidecar/THIRD-PARTY-LICENSES.txt` (mnemographica and the npm packages inside `main.js`), `sidecar/vendor/*.LICENSE.txt` (d3, three) and the license files of the packages in `sidecar/node_modules/`.

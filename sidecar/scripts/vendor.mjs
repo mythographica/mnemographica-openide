@@ -25,7 +25,10 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 export const VENDOR_FILES = [
 	{ name: 'd3.min.js', url: 'https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js' },
-	{ name: 'three.min.js', url: 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js' }
+	{ name: 'three.min.js', url: 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js' },
+	// The license texts ship next to the minified files
+	{ name: 'd3.LICENSE.txt', url: 'https://cdn.jsdelivr.net/npm/d3@7/LICENSE' },
+	{ name: 'three.LICENSE.txt', url: 'https://cdn.jsdelivr.net/npm/three@0.160.0/LICENSE' }
 ];
 
 const present = (file) => existsSync(file) && statSync(file).size > 0;

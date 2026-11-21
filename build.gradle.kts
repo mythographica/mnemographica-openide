@@ -74,7 +74,7 @@ intellijPlatform {
         version = providers.gradleProperty("pluginVersion")
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = provider { null }
+            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
     pluginVerification {
@@ -119,6 +119,9 @@ tasks {
             into(pluginName.map { "$it/sidecar" })
             // The extension's LoggerService writes dist/logs during the sidecar tests; not part of the plugin.
             exclude("logs/**")
+        }
+        from(layout.projectDirectory.file("LICENSE")) {
+            into(pluginName)
         }
     }
 

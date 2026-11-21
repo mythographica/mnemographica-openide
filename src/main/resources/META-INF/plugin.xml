@@ -1,13 +1,33 @@
 <idea-plugin>
     <id>ru.mythographica.mnemographica</id>
     <name>Mnemonica Graphica</name>
-    <vendor url="https://github.com/mythographica">mythographica</vendor>
+    <vendor url="https://github.com/andrewkuzmenko">Andrew Kuzmenko</vendor>
     <description><![CDATA[
-    Mnemonica Graphica for OpenIDE: the unmodified <a href="https://github.com/mythographica/mnemographica">mnemographica</a>
-    VS Code extension running in a Node.js sidecar. Browse a project's Mnemonica type graph (Types, Usages, Flow,
-    By Generation, Diamonds, Bagels, Live Trace), open the interactive 3D graph, and use Ctrl+Click and
-    Find Mnemonica References on Mnemonica types. Requires Node.js 18 or newer and a project with a
-    <code>.tactica/</code> directory produced by <code>@mnemonica/tactica</code>.
+    <p>Mnemonica Graphica for OpenIDE: the unmodified
+    <a href="https://github.com/mythographica/mnemographica">mnemographica</a> VS Code extension running in a Node.js
+    sidecar. Browse a project's Mnemonica type graph (Types, Usages, Flow, By Generation, Diamonds, Bagels,
+    Live Trace), open the interactive 3D graph, and use Ctrl+Click and Find Mnemonica References on Mnemonica types.
+    Requires Node.js 18 or newer and a project with a <code>.tactica/</code> directory produced by
+    <code>@mnemonica/tactica</code>. Source code and issues:
+    <a href="https://github.com/mythographica/mnemographica-openide">github.com/mythographica/mnemographica-openide</a>.
+    MIT license.</p>
+    <hr/>
+    <p>Mnemonica Graphica для OpenIDE: расширение VS Code
+    <a href="https://github.com/mythographica/mnemographica">mnemographica</a> без изменений работает в процессе Node.js
+    рядом с IDE.</p>
+    <ul>
+        <li>Окно Mnemonica с графом типов проекта: Types, Usages, Flow, By Generation, Diamonds, Bagels, Live Trace.</li>
+        <li>Интерактивный 3D-граф типов во вкладке редактора. d3 и three входят в плагин, сеть не нужна.</li>
+        <li>Ctrl+Click по типу Mnemonica открывает его <code>define()</code>; действие Find Mnemonica References
+        (Alt+Shift+F4) ищет использования.</li>
+        <li>Вкладки Ψ Strategy MCP и Ψ App Channel для сервера <code>@mnemonica/strategy</code> и трассировки
+        запущенного приложения.</li>
+    </ul>
+    <p>Нужны Node.js 18 или новее и проект с каталогом <code>.tactica/</code>, который создаёт
+    <code>@mnemonica/tactica</code>. Путь к Node.js задаётся в Settings | Tools | Mnemonica.</p>
+    <p>Исходный код и сообщения об ошибках:
+    <a href="https://github.com/mythographica/mnemographica-openide">github.com/mythographica/mnemographica-openide</a>.
+    Лицензия MIT.</p>
     ]]></description>
     <change-notes><![CDATA[
     <h3>0.1.0</h3>
