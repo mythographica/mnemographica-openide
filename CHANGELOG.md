@@ -9,7 +9,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Kotlin host plugin for OpenIDE 2026.2 (build 262 and newer) that starts one Node.js sidecar per project and talks to it
   over JSON-RPC on stdio ([docs/PROTOCOL.md](docs/PROTOCOL.md)).
-- Node sidecar that runs the unmodified mnemographica 0.5.9 VS Code extension on a `vscode` API shim.
+- Node sidecar that runs the unmodified mnemographica 0.5.12 VS Code extension on a `vscode` API shim.
 - Mnemonica tool window with the Live Trace, Usages, Types, Flow, By Generation, Diamonds and Bagels tabs, item
   context menus, view toolbars and the extension's commands under Tools | Mnemonica.
 - Webview editors on JCEF for Ψ 3D, Ψ Strategy MCP and Ψ App Channel, with IDE theme colors, a `mnemo-res://`

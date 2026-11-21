@@ -1,5 +1,7 @@
 package ru.mythographica.mnemographica.rpc
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
@@ -58,6 +60,13 @@ class RealSidecarRoundTripTest {
 
         @JsonRequest("window/showMessage")
         fun showMessage(params: ShowMessageParams): CompletableFuture<String?> = CompletableFuture.completedFuture(null)
+
+        /** The extension stores its Types filter state through `setContext` during activation. */
+        @JsonRequest("commands/executeBuiltin")
+        fun executeBuiltin(params: ExecuteBuiltinParams): CompletableFuture<JsonElement?> {
+            assertEquals("setContext", params.command)
+            return CompletableFuture.completedFuture(JsonNull.INSTANCE)
+        }
     }
 
     private lateinit var process: Process

@@ -23,7 +23,7 @@
 		"@mnemonica/topologica": "0.1.0",
 		"ajv": "8.20.0",
 		"chokidar": "^4.0.3",
-		"mnemonica": "1.4.2",
+		"mnemonica": "1.4.8",
 		"vscode-jsonrpc": "10.0.0",
 		"ws": "8.22.0"
 	},

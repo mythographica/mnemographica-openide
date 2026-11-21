@@ -68,7 +68,7 @@ class FakeSidecarRoundTripTest {
         assertEquals(7, result.views.size)
         assertEquals(7, host.registered.size)
         assertTrue(result.commands.any { it.command == "mnemographica.showTypeGraph" && it.title == "Ψ 3D" })
-        assertEquals(6, result.menus.viewTitle.size)
+        assertEquals(11, result.menus.viewTitle.size)
         assertEquals(9, result.menus.viewItemContext.size)
         assertTrue(result.configuration!!.toString().contains("mnemographica.strategyLogPort"))
 

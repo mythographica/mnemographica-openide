@@ -11,6 +11,7 @@ import {
 	ProgressBeginNotification,
 	ProgressEndNotification,
 	ProgressReportNotification,
+	ShowInputBoxRequest,
 	ShowMessageRequest,
 	ShowOpenDialogRequest,
 	ShowQuickPickRequest,
@@ -82,6 +83,16 @@ const showQuickPick = async (
 	}
 	const chosen = picked.map(index => items[index]).filter(item => item !== undefined);
 	return options?.canPickMany ? chosen : chosen[0];
+};
+
+const showInputBox = async (options?: api.InputBoxOptions, _token?: api.CancellationToken): Promise<string | undefined> => {
+	const text = await rpc().sendRequest(ShowInputBoxRequest, {
+		prompt: options?.prompt ?? options?.title,
+		value: options?.value,
+		placeHolder: options?.placeHolder,
+		password: options?.password
+	});
+	return text ?? undefined;
 };
 
 // --------------------------------------------------------------- editors
@@ -399,6 +410,7 @@ type usedWindow = Pick<typeof api.window,
 	| 'registerUriHandler'
 	| 'showErrorMessage'
 	| 'showInformationMessage'
+	| 'showInputBox'
 	| 'showOpenDialog'
 	| 'showQuickPick'
 	| 'showSaveDialog'
@@ -415,6 +427,7 @@ export const window: usedWindow = {
 	showWarningMessage: (message: string, ...rest: any[]) => showMessage('warning', message, rest),
 	showErrorMessage: (message: string, ...rest: any[]) => showMessage('error', message, rest),
 	showQuickPick,
+	showInputBox,
 	showOpenDialog,
 	showSaveDialog,
 	showTextDocument,

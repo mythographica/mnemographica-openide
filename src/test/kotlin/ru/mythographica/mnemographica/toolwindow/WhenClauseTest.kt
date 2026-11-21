@@ -72,6 +72,6 @@ class WhenClauseTest {
             .toList()
         assertTrue(clauses.isNotEmpty())
         clauses.forEach { WhenClause.parse(it) }
-        assertEquals(15, clauses.size)
+        assertEquals(20, clauses.size)
     }
 }
